@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.PdaKeyMapper">
+
+    <resultMap type="PdaKey" id="PdaKeyResult">
+        <result property="id"    column="id"    />
+        <result property="key"    column="key"    />
+        <result property="type"    column="type"    />
+        <result property="description"    column="description"    />
+        <result property="company"    column="company"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectPdaKeyVo">
+        select id, `key`, type, description, company, create_by, create_time, update_by, update_time, remark from pda_key
+    </sql>
+
+    <select id="selectPdaKeyById" parameterType="Long" resultMap="PdaKeyResult">
+        <include refid="selectPdaKeyVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectPdaKeyList" parameterType="PdaKey" resultMap="PdaKeyResult">
+        <include refid="selectPdaKeyVo"/>
+        <where>
+            <if test="key != null and key != ''">
+                and `key` like concat('%', #{key}, '%')
+            </if>
+            <if test="type != null and type != ''">
+                and type = #{type}
+            </if>
+            <if test="company != null and company != ''">
+                and company like concat('%', #{company}, '%')
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertPdaKey" parameterType="PdaKey" useGeneratedKeys="true" keyProperty="id">
+        insert into pda_key
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="key != null and key != ''">`key`,</if>
+            type,
+            <if test="description != null and description != ''">description,</if>
+            <if test="company != null and company != ''">company,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="key != null and key != ''">#{key},</if>
+            <choose><when test="type != null and type != ''">#{type}</when><otherwise>''</otherwise></choose>,
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="company != null and company != ''">#{company},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updatePdaKey" parameterType="PdaKey">
+        update pda_key
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="key != null and key != ''">`key` = #{key},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+            <if test="company != null and company != ''">company = #{company},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePdaKeyById" parameterType="Long">
+        delete from pda_key where id = #{id}
+    </delete>
+
+    <delete id="deletePdaKeyByIds" parameterType="String">
+        delete from pda_key where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectPdaKeyByKey" parameterType="String" resultMap="PdaKeyResult">
+        <include refid="selectPdaKeyVo"/>
+        where `key` = #{key}
+        limit 1
+    </select>
+
+    <select id="checkKeyUnique" resultMap="PdaKeyResult">
+        select id, `key` from pda_key
+        where `key` = #{key}
+        <if test="id != null">
+            and id != #{id}
+        </if>
+        limit 1
+    </select>
+
+</mapper>
